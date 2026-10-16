@@ -6,8 +6,8 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-lg font-bold text-white">Q</span>
-                        <span class="font-bold text-gray-800">{{ config('app.name', 'Monitoring Hafalan') }}</span>
+                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-lg font-bold text-white">TPQ</span>
+                        <span class="font-bold text-gray-800">{{ config('app.name', 'Monitoring Hafalan TPQ AL-FAWWAZ') }}</span>
                     </a>
                 </div>
 

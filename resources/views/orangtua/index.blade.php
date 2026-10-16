@@ -1,6 +1,6 @@
 @php $prefix = request()->segment(1) === 'ustad' ? 'ustad.' : 'admin.'; @endphp
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Data Orang Tua</h2></x-slot>
+    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Data Wali Santri</h2></x-slot>
     <div class="flex">
         @include('layouts.sidebar', ['role' => request()->segment(1) === 'ustad' ? 'ustad' : 'admin'])
         <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 space-y-4">
@@ -11,7 +11,7 @@
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama/email..." class="border-gray-300 rounded-md shadow-sm text-sm" />
                     <button class="bg-gray-800 text-white px-3 py-1.5 rounded text-sm">Cari</button>
                 </form>
-                <a href="{{ route($prefix.'orangtua.create') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-sm">+ Tambah Orang Tua</a>
+                <a href="{{ route($prefix.'orangtua.create') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-sm">+ Tambah Wali Santri</a>
             </div>
             <div class="bg-white rounded-lg shadow overflow-x-auto">
                 <table class="min-w-full text-sm">

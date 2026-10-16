@@ -18,12 +18,8 @@
                 <p><span class="text-gray-500">Ayat:</span> {{ $setoran->ayat_mulai ?? '-' }} - {{ $setoran->ayat_selesai ?? '-' }}</p>
                 <p><span class="text-gray-500">Juz:</span> {{ $setoran->juz_mulai ?? '-' }} - {{ $setoran->juz_selesai ?? '-' }}</p>
                 <p><span class="text-gray-500">Jumlah Halaman:</span> {{ $setoran->jumlah_halaman ?? '-' }}</p>
-                <p><span class="text-gray-500">Kelancaran:</span> {{ $setoran->kelancaran ?? '-' }}</p>
-                <p><span class="text-gray-500">Tajwid:</span> {{ $setoran->tajwid ?? '-' }}</p>
-                <p><span class="text-gray-500">Makhraj:</span> {{ $setoran->makhraj ?? '-' }}</p>
                 <p><span class="text-gray-500">Jumlah Kesalahan:</span> {{ $setoran->jumlah_kesalahan ?? '-' }}</p>
-                <p><span class="text-gray-500">Nilai:</span> {{ $setoran->nilai ?? '-' }}</p>
-                <p><span class="text-gray-500">Status:</span> {{ $setoran->status ?? '-' }}</p>
+                <p><span class="text-gray-500">Status:</span> {{ $setoran->status ? ucfirst($setoran->status) : '-' }}</p>
                 <p class="sm:col-span-2"><span class="text-gray-500">Catatan:</span> {{ $setoran->catatan ?? '-' }}</p>
             </div>
             <a href="{{ route($prefix.'setoran.index') }}" class="inline-block mt-4 text-sm text-gray-600 hover:underline">&larr; Kembali</a>

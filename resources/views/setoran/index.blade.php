@@ -2,7 +2,7 @@
     $seg = request()->segment(1);
     $prefix = $seg === 'ustad' ? 'ustad.' : ($seg === 'orangtua' ? 'orangtua.' : 'admin.');
     $role = $seg === 'ustad' ? 'ustad' : ($seg === 'orangtua' ? 'orang_tua' : 'admin');
-    $canManage = $prefix !== 'orangtua.';
+    $canManage = $prefix === 'ustad.';
 @endphp
 <x-app-layout>
     <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Data Setoran</h2></x-slot>
@@ -26,7 +26,7 @@
             <div class="bg-white rounded-lg shadow overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead><tr class="border-b text-left text-gray-500">
-                        <th class="py-2 px-3">Tanggal</th><th class="py-2 px-3">Santri</th><th class="py-2 px-3">Jenis</th><th class="py-2 px-3">Materi</th><th class="py-2 px-3">Nilai</th><th class="py-2 px-3">Aksi</th>
+                        <th class="py-2 px-3">Tanggal</th><th class="py-2 px-3">Santri</th><th class="py-2 px-3">Jenis</th><th class="py-2 px-3">Materi</th><th class="py-2 px-3">Status</th><th class="py-2 px-3">Aksi</th>
                     </tr></thead>
                     <tbody>
                         @forelse ($setoran ?? [] as $s)
@@ -35,7 +35,7 @@
                                 <td class="py-2 px-3">{{ $s->santri->nama ?? '-' }}</td>
                                 <td class="py-2 px-3">{{ strtoupper($s->jenis_setoran) }}</td>
                                 <td class="py-2 px-3">{{ $s->ringkasanMateri() }}</td>
-                                <td class="py-2 px-3">{{ $s->nilai ?? '-' }}</td>
+                                <td class="py-2 px-3">{{ $s->status ? ucfirst($s->status) : '-' }}</td>
                                 <td class="py-2 px-3 space-x-2 whitespace-nowrap">
                                     <a href="{{ route($prefix.'setoran.show', $s) }}" class="text-indigo-600 hover:underline">Detail</a>
                                     @if ($canManage)

@@ -17,7 +17,7 @@
                 $cards = [
                     ['Total Santri', $totalSantri ?? 0],
                     ['Total Ustad', $totalUstad ?? 0],
-                    ['Total Orang Tua', $totalOrangTua ?? 0],
+                    ['Total Wali Santri', $totalOrangTua ?? 0],
                     ['Total Setoran', $totalSetoran ?? 0],
                     ['Setoran Hari Ini', $setoranHariIni ?? 0],
                     ['Sabaq', ($countPerJenis['sabaq'] ?? 0)],
@@ -51,7 +51,7 @@
                     <h3 class="font-semibold mb-2">Setoran Terbaru</h3>
                     <table class="min-w-full text-sm">
                         <thead><tr class="border-b text-left text-gray-500">
-                            <th class="py-2 pr-2">Tanggal</th><th class="py-2 pr-2">Santri</th><th class="py-2 pr-2">Jenis</th><th class="py-2">Nilai</th>
+                            <th class="py-2 pr-2">Tanggal</th><th class="py-2 pr-2">Santri</th><th class="py-2 pr-2">Jenis</th><th class="py-2">Status</th>
                         </tr></thead>
                         <tbody>
                             @forelse ($setoranTerbaru ?? [] as $s)
@@ -59,7 +59,7 @@
                                     <td class="py-2 pr-2">{{ optional($s->tanggal_setoran)->format('Y-m-d') }}</td>
                                     <td class="py-2 pr-2">{{ $s->santri->nama ?? '-' }}</td>
                                     <td class="py-2 pr-2">{{ strtoupper($s->jenis_setoran) }}</td>
-                                    <td class="py-2">{{ $s->nilai ?? '-' }}</td>
+                                    <td class="py-2">{{ $s->status ? ucfirst($s->status) : '-' }}</td>
                                 </tr>
                             @empty
                                 <tr><td colspan="4" class="py-2 text-gray-500">Belum ada data.</td></tr>

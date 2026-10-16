@@ -31,7 +31,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('ustad', UstadController::class);
     Route::resource('orangtua', OrangTuaController::class);
     Route::resource('santri', SantriController::class);
-    Route::resource('setoran', SetoranController::class);
+    Route::resource('setoran', SetoranController::class)->only(['index', 'show']);
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
     Route::get('/rekap/pdf', [RekapController::class, 'exportPdf'])->name('rekap.pdf');
     Route::get('/rekap/excel', [RekapController::class, 'exportExcel'])->name('rekap.excel');
@@ -39,7 +39,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth', 'role:ustad'])->prefix('ustad')->name('ustad.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'ustad'])->name('dashboard');
-    Route::resource('santri', SantriController::class)->only(['index', 'show', 'create', 'store']);
+    Route::resource('santri', SantriController::class)->only(['index', 'show']);
     Route::resource('setoran', SetoranController::class);
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
     Route::get('/rekap/pdf', [RekapController::class, 'exportPdf'])->name('rekap.pdf');

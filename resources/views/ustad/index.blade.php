@@ -8,7 +8,7 @@
             @if (session('error'))<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{{ session('error') }}</div>@endif
             <div class="flex flex-wrap gap-2 justify-between items-center">
                 <form method="GET" class="flex gap-2">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama/email..." class="border-gray-300 rounded-md shadow-sm text-sm" />
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari NIU/nama/email..." class="border-gray-300 rounded-md shadow-sm text-sm" />
                     <button class="bg-gray-800 text-white px-3 py-1.5 rounded text-sm">Cari</button>
                 </form>
                 <a href="{{ route($prefix.'ustad.create') }}" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-sm">+ Tambah Ustad</a>
@@ -16,11 +16,12 @@
             <div class="bg-white rounded-lg shadow overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead><tr class="border-b text-left text-gray-500">
-                        <th class="py-2 px-3">Nama</th><th class="py-2 px-3">Email</th><th class="py-2 px-3">No. HP</th><th class="py-2 px-3">Status</th><th class="py-2 px-3">Aksi</th>
+                        <th class="py-2 px-3">NIU</th><th class="py-2 px-3">Nama</th><th class="py-2 px-3">Email</th><th class="py-2 px-3">No. HP</th><th class="py-2 px-3">Status</th><th class="py-2 px-3">Aksi</th>
                     </tr></thead>
                     <tbody>
                         @forelse ($ustad ?? [] as $u)
                             <tr class="border-b">
+                                <td class="py-2 px-3">{{ $u->niu ?? '-' }}</td>
                                 <td class="py-2 px-3">{{ $u->nama }}</td>
                                 <td class="py-2 px-3">{{ $u->email ?? $u->user->email ?? '-' }}</td>
                                 <td class="py-2 px-3">{{ $u->nomor_hp ?? '-' }}</td>

@@ -1,6 +1,6 @@
 @php $prefix = request()->segment(1) === 'ustad' ? 'ustad.' : 'admin.'; @endphp
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Orang Tua</h2></x-slot>
+    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Detail Wali Santri</h2></x-slot>
     <div class="flex">
         @include('layouts.sidebar', ['role' => request()->segment(1) === 'ustad' ? 'ustad' : 'admin'])
         <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 space-y-4">

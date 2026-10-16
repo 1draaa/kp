@@ -3,7 +3,7 @@
     $prefix = $seg === 'ustad' ? 'ustad.' : ($seg === 'orangtua' ? 'orangtua.' : 'admin.');
     $role = $seg === 'ustad' ? 'ustad' : ($seg === 'orangtua' ? 'orang_tua' : 'admin');
     $canManage = $prefix === 'admin.';
-    $canCreate = in_array($prefix, ['admin.', 'ustad.'], true);
+    $canCreate = $prefix === 'admin.';
 @endphp
 <x-app-layout>
     <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Data Santri</h2></x-slot>

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\OrangTua;
 use App\Models\Santri;
+use App\Models\User;
 use App\Models\Ustad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SantriController extends Controller
 {
@@ -51,40 +53,76 @@ class SantriController extends Controller
 
     public function create()
     {
+        // Ustad tidak diperbolehkan menambah santri baru (hanya admin).
+        if (auth()->check() && auth()->user()->role === 'ustad') {
+            abort(403, 'Ustad tidak diperbolehkan menambah santri baru.');
+        }
+
         $ustadList = Ustad::where('status', 'aktif')->orderBy('nama')->get();
-        $orangTuaList = OrangTua::orderBy('nama')->get();
         $ustadAktif = null;
         if (auth()->check() && auth()->user()->role === 'ustad') {
             $ustadAktif = Ustad::where('user_id', auth()->id())->firstOrFail();
         }
 
-        return view('santri.create', compact('ustadList', 'orangTuaList', 'ustadAktif'));
+        return view('santri.create', compact('ustadList', 'ustadAktif'));
     }
 
     public function store(Request $request)
     {
+        // Ustad tidak diperbolehkan menambah santri baru (hanya admin).
+        if (auth()->check() && auth()->user()->role === 'ustad') {
+            abort(403, 'Ustad tidak diperbolehkan menambah santri baru.');
+        }
+
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:255'],
             'nis' => ['required', 'string', 'max:30', 'unique:santri,nis'],
             'jenis_kelamin' => ['required', 'in:L,P'],
             'tanggal_lahir' => ['nullable', 'date'],
             'alamat' => ['nullable', 'string'],
-            'orang_tua_id' => ['nullable', 'exists:orang_tua,id'],
-            'ustad_id' => ['nullable', 'exists:ustad,id'],
             'tanggal_masuk' => ['nullable', 'date'],
             'target_hafalan' => ['nullable', 'integer', 'min:1', 'max:30'],
             'status' => ['nullable', 'in:aktif,lulus,keluar'],
+            // Wali santri diisi manual (1 santri = 1 wali baru)
+            'wali_nama' => ['required', 'string', 'max:255'],
+            'wali_email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'wali_nomor_hp' => ['nullable', 'string', 'max:20'],
+            'wali_password' => ['required', 'string', 'min:8', 'max:255'],
+            // Ustad dipilih dari data yang sudah terdaftar (tidak membuat baru)
+            'ustad_id' => ['required', 'exists:ustad,id'],
         ]);
 
-        // Jika yang input ustad, santri otomatis masuk bimbingannya
-        if (auth()->check() && auth()->user()->role === 'ustad') {
-            $ustadAktif = Ustad::where('user_id', auth()->id())->firstOrFail();
-            $validated['ustad_id'] = $ustadAktif->id;
-        }
+        $santri = DB::transaction(function () use ($validated, $request) {
+            $userWali = new User();
+            $userWali->name = $validated['wali_nama'];
+            $userWali->email = $validated['wali_email'] ?? str()->slug($validated['wali_nama']).'-'.time().'@pesantren.local';
+            $userWali->password = $validated['wali_password'];
+            $userWali->role = 'orang_tua';
+            $userWali->save();
 
-        $santri = Santri::create($validated);
+            $orangTua = OrangTua::create([
+                'user_id' => $userWali->id,
+                'nama' => $validated['wali_nama'],
+                'nomor_hp' => $validated['wali_nomor_hp'] ?? null,
+                'alamat' => $validated['alamat'] ?? $request->input('wali_alamat'),
+                'status' => 'aktif',
+            ]);
 
-        return redirect()->route($this->routePrefix().'santri.show', $santri)->with('success', 'Data santri berhasil ditambahkan.');
+            return Santri::create([
+                'nama' => $validated['nama'],
+                'nis' => $validated['nis'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+                'alamat' => $validated['alamat'] ?? null,
+                'orang_tua_id' => $orangTua->id,
+                'ustad_id' => $validated['ustad_id'],
+                'tanggal_masuk' => $validated['tanggal_masuk'] ?? null,
+                'target_hafalan' => $validated['target_hafalan'] ?? 30,
+                'status' => $validated['status'] ?? 'aktif',
+            ]);
+        });
+
+        return redirect()->route($this->routePrefix().'santri.show', $santri)->with('success', 'Data santri + wali santri berhasil ditambahkan.');
     }
 
     public function show(Santri $santri)
@@ -110,18 +148,17 @@ class SantriController extends Controller
         $juzUnik = $santri->setoran()->whereNotNull('juz_mulai')->distinct()->count('juz_mulai');
         $target = max(1, (int) $santri->target_hafalan);
         $progress = min(100, round($juzUnik / $target * 100, 1));
-        $nilaiRata2 = round((float) $santri->setoran()->avg('nilai'), 1);
         $totalSetoran = $santri->setoran()->count();
 
-        return view('santri.show', compact('santri', 'setoranTerbaru', 'juzUnik', 'progress', 'nilaiRata2', 'totalSetoran'));
+        return view('santri.show', compact('santri', 'setoranTerbaru', 'juzUnik', 'progress', 'totalSetoran'));
     }
 
     public function edit(Santri $santri)
     {
         $ustadList = Ustad::where('status', 'aktif')->orderBy('nama')->get();
-        $orangTuaList = OrangTua::orderBy('nama')->get();
+        $santri->load(['orangTua.user', 'ustad']);
 
-        return view('santri.edit', compact('santri', 'ustadList', 'orangTuaList'));
+        return view('santri.edit', compact('santri', 'ustadList'));
     }
 
     public function update(Request $request, Santri $santri)
@@ -132,14 +169,64 @@ class SantriController extends Controller
             'jenis_kelamin' => ['required', 'in:L,P'],
             'tanggal_lahir' => ['nullable', 'date'],
             'alamat' => ['nullable', 'string'],
-            'orang_tua_id' => ['nullable', 'exists:orang_tua,id'],
-            'ustad_id' => ['nullable', 'exists:ustad,id'],
             'tanggal_masuk' => ['nullable', 'date'],
             'target_hafalan' => ['nullable', 'integer', 'min:1', 'max:30'],
             'status' => ['nullable', 'in:aktif,lulus,keluar'],
+            // Wali santri diedit manual (update data orang_tua yang terrelasi)
+            'wali_nama' => ['required', 'string', 'max:255'],
+            'wali_email' => ['nullable', 'email', 'max:255', 'unique:users,email,'.optional(optional($santri->orangTua)->user)->id],
+            'wali_nomor_hp' => ['nullable', 'string', 'max:20'],
+            'wali_password' => ['nullable', 'string', 'min:8', 'max:255'],
+            // Ustad dipilih dari data yang sudah terdaftar (tidak membuat baru)
+            'ustad_id' => ['required', 'exists:ustad,id'],
         ]);
 
-        $santri->update($validated);
+        DB::transaction(function () use ($validated, $santri, $request) {
+            $santri->update([
+                'nama' => $validated['nama'],
+                'nis' => $validated['nis'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+                'alamat' => $validated['alamat'] ?? null,
+                'ustad_id' => $validated['ustad_id'],
+                'tanggal_masuk' => $validated['tanggal_masuk'] ?? null,
+                'target_hafalan' => $validated['target_hafalan'] ?? 30,
+                'status' => $validated['status'] ?? $santri->status,
+            ]);
+
+            $orangTua = $santri->orangTua()->first();
+
+            if ($orangTua) {
+                if ($orangTua->user) {
+                    $orangTua->user->update(array_filter([
+                        'name' => $validated['wali_nama'],
+                        'email' => $validated['wali_email'] ?? $orangTua->user->email,
+                        'password' => $validated['wali_password'] ?? null,
+                    ]));
+                }
+                $orangTua->update([
+                    'nama' => $validated['wali_nama'],
+                    'nomor_hp' => $validated['wali_nomor_hp'] ?? null,
+                    'alamat' => $validated['alamat'] ?? $request->input('wali_alamat'),
+                ]);
+            } else {
+                $user = new User();
+                $user->name = $validated['wali_nama'];
+                $user->email = $validated['wali_email'] ?? str()->slug($validated['wali_nama']).'-'.time().'@pesantren.local';
+                $user->password = $validated['wali_password'] ?? 'password';
+                $user->role = 'orang_tua';
+                $user->save();
+
+                $baru = OrangTua::create([
+                    'user_id' => $user->id,
+                    'nama' => $validated['wali_nama'],
+                    'nomor_hp' => $validated['wali_nomor_hp'] ?? null,
+                    'alamat' => $validated['alamat'] ?? $request->input('wali_alamat'),
+                    'status' => 'aktif',
+                ]);
+                $santri->update(['orang_tua_id' => $baru->id]);
+            }
+        });
 
         return redirect()->route($this->routePrefix().'santri.show', $santri)->with('success', 'Data santri berhasil diperbarui.');
     }

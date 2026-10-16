@@ -84,7 +84,6 @@ class DashboardController extends Controller
         $anakList = $orangTua->santri()->with(['ustad', 'setoran' => fn ($q) => $q->latest('tanggal_setoran')->latest('id')])->get()
             ->map(function (Santri $anak) {
                 $anak->total_setoran = $anak->setoran()->count();
-                $anak->nilai_rata2 = round((float) $anak->setoran()->avg('nilai'), 1);
                 $anak->setoran_terakhir = $anak->setoran()->latest('tanggal_setoran')->latest('id')->first();
                 $anak->juz_unik = $anak->setoran()->whereNotNull('juz_mulai')->distinct()->count('juz_mulai');
                 return $anak;

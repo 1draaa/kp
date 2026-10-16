@@ -24,7 +24,6 @@
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="font-semibold">Santri Bimbingan</h3>
                     <div class="flex gap-2">
-                        <a href="{{ route('ustad.santri.create') }}" class="text-sm bg-green-600 text-white px-3 py-1.5 rounded">Input Santri Baru</a>
                         <a href="{{ route('ustad.setoran.create') }}" class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded">Input Setoran</a>
                     </div>
                 </div>

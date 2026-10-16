@@ -13,7 +13,7 @@ class Ustad extends Model
 
     protected $table = 'ustad';
 
-    protected $fillable = ['user_id', 'nama', 'nomor_hp', 'alamat', 'status'];
+    protected $fillable = ['user_id', 'niu', 'nama', 'nomor_hp', 'alamat', 'status'];
 
     public function user(): BelongsTo
     {

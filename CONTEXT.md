@@ -6,8 +6,9 @@
 ## 1. Ringkasan
 
 Aplikasi web Laravel untuk mencatat & memantau hafalan Al-Qur'an santri.
-Ustad input 4 jenis setoran (Sabaq, Sabqy, Qiroah, Manzil); orang tua memantau
-hafalan anak secara online; admin mengelola semua data + rekap + export PDF/Excel.
+Ustad input 4 jenis setoran (Sabaq, Sabqy, Qiroah, Manzil); wali santri memantau
+hafalan anak secara online; admin mengelola data ustad/santri/wali santri + rekap + export PDF/Excel.
+Admin hanya dapat melihat data setoran (tidak bisa input/edit/hapus setoran).
 (Ejaan resmi: **ustad**, bukan ustaz — berlaku di kode, tabel DB, role, dan URL.)
 
 ## 2. Environment
@@ -59,7 +60,10 @@ Setup dari nol (jika DB hilang): buat DB `monitoring_hafalan`, lalu
 
 ## 5. Role & otorisasi
 
-- `users.role`: `admin | ustad | orang_tua` (default `orang_tua`; register selalu `orang_tua`)
+- `users.role`: `admin | ustad | orang_tua` (default `orang_tua`; label tampilan: **Wali Santri**).
+  Registrasi publik dinonaktifkan (route `/register` dihapus).
+- Fitur lupa password aktif via Breeze (`/forgot-password`, `/reset-password/{token}`);
+  `MAIL_MAILER=log` (link reset tercatat di `storage/logs/laravel.log`). Link "Lupa password?" ada di halaman login.
 - Middleware `App\Http\Middleware\CheckRole`, alias `role` didaftarkan di
   `bootstrap/app.php`. Dipakai sebagai `role:admin`, `role:ustad`, `role:orang_tua`.
 - Redirect login by role: `User::redirectPathByRole()` (`app/Models/User.php`),
@@ -71,14 +75,15 @@ Setup dari nol (jika DB hilang): buat DB `monitoring_hafalan`, lalu
 ## 6. Database (MySQL)
 
 - `users`: id, name, email, password (hash), **role**, timestamps
-- `ustad`: id, user_id→users, nama, nomor_hp, alamat, status(aktif/nonaktif)
-- `orang_tua`: id, user_id→users, nama, nomor_hp, alamat, status(aktif/nonaktif)
+- `ustad`: id, **niu(unique, Nomor Induk Ustad)**, user_id→users, nama, nomor_hp, alamat, status(aktif/nonaktif)
+- `orang_tua` (label tampilan: **wali santri**): id, user_id→users, nama, nomor_hp, alamat, status(aktif/nonaktif)
 - `santri`: id, nama, nis(unique), jenis_kelamin(L/P), tanggal_lahir, alamat,
   orang_tua_id→orang_tua, ustad_id→ustad, tanggal_masuk, target_hafalan, status
 - `setoran`: id, santri_id→santri, ustad_id→ustad, jenis_setoran
   (sabaq/sabqy/qiroah/manzil), tanggal_setoran, juz_mulai, juz_selesai,
   surat_mulai, surat_selesai, ayat_mulai, ayat_selesai, jumlah_halaman,
-  kelancaran, tajwid, makhraj, jumlah_kesalahan, nilai, status, catatan
+  jumlah_kesalahan, status (**lanjut/mengulang** saja), catatan.
+  (Kolom lama `kelancaran/tajwid/makhraj/nilai` masih ada di DB tapi tidak dipakai di form/laporan.)
 - Migrasi: `database/migrations/2026_09_26_000010_*` (role),
   `2026_09_26_000020_*` (4 tabel hafalan, awalnya ejaan `ustaz`),
   `2026_09_27_000030_*` (status orang_tua), `2026_09_27_000031_*`
@@ -97,8 +102,8 @@ Setup dari nol (jika DB hilang): buat DB `monitoring_hafalan`, lalu
 - `/` (name `home`) → landing `views/landing.blade.php` untuk guest,
   redirect by role jika sudah login. (Welcome bawaan Laravel TIDAK dipakai.)
 - `/dashboard` → redirect by role.
-- `admin/*` (`role:admin`): `dashboard` (DashboardController@admin),
-  resource `ustad|orangtua|santri|setoran`, `rekap|rekap/pdf|rekap/excel`
+- `admin/*` (`role:admin`): `dashboard`, resource `ustad|orangtua|santri`,
+  resource `setoran` hanya `index,show` (read-only), `rekap|rekap/pdf|rekap/excel`
 - `ustad/*` (`role:ustad`): `dashboard`, resource `santri`(index,show,create,store),
   resource `setoran` (full), `rekap|rekap/pdf|rekap/excel`
 - `orangtua/*` (`role:orang_tua`): `dashboard`, resource `santri`(index,show),

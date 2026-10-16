@@ -1,6 +1,6 @@
 @php $prefix = request()->segment(1) === 'ustad' ? 'ustad.' : 'admin.'; @endphp
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Orang Tua</h2></x-slot>
+    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Wali Santri</h2></x-slot>
     <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
         <form action="{{ route($prefix.'orangtua.update', $orangtua) }}" method="POST" class="bg-white p-6 rounded-lg shadow space-y-4">
             @csrf @method('PUT')

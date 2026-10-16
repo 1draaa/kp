@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard Orang Tua</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard Wali Santri</h2>
     </x-slot>
     <div class="flex">
         @include('layouts.sidebar', ['role' => 'orang_tua'])
@@ -20,16 +20,24 @@
                         <h3 class="font-semibold text-lg">{{ $anak->nama }} <span class="text-sm text-gray-500">({{ $anak->nis }})</span></h3>
                         <a href="{{ route('orangtua.santri.show', $anak) }}" class="text-sm text-indigo-600 hover:underline">Lihat Detail</a>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                         <div class="bg-gray-50 p-3 rounded"><p class="text-gray-500">Total Setoran</p><p class="font-bold">{{ $anak->total_setoran ?? 0 }}</p></div>
-                        <div class="bg-gray-50 p-3 rounded"><p class="text-gray-500">Rata-rata Nilai</p><p class="font-bold">{{ $anak->nilai_rata2 ?? '-' }}</p></div>
                         <div class="bg-gray-50 p-3 rounded"><p class="text-gray-500">Juz Unik</p><p class="font-bold">{{ $anak->juz_unik ?? 0 }}</p></div>
                         <div class="bg-gray-50 p-3 rounded"><p class="text-gray-500">Setoran Terakhir</p><p class="font-bold">{{ optional($anak->setoran_terakhir?->tanggal_setoran)->format('Y-m-d') ?? '-' }}</p></div>
                     </div>
+                    @if (($anak->setoran ?? collect())->count())
                     <div>
-                        <h4 class="text-sm font-semibold text-gray-600 mb-1">Perkembangan Nilai</h4>
-                        <canvas id="chartAnak{{ $i }}"></canvas>
+                        <h4 class="text-sm font-semibold text-gray-600 mb-1">Riwayat Setoran Terakhir</h4>
+                        <table class="min-w-full text-sm">
+                            <thead><tr class="border-b text-left text-gray-500"><th class="py-1 pr-2">Tanggal</th><th class="py-1 pr-2">Jenis</th><th class="py-1">Status</th></tr></thead>
+                            <tbody>
+                                @foreach ($anak->setoran->take(5) as $s)
+                                <tr class="border-b"><td class="py-1 pr-2">{{ optional($s->tanggal_setoran)->format('Y-m-d') }}</td><td class="py-1 pr-2">{{ strtoupper($s->jenis_setoran) }}</td><td class="py-1">{{ $s->status ? ucfirst($s->status) : '-' }}</td></tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
+                    @endif
                 </div>
             @empty
                 <div class="bg-white p-4 rounded-lg shadow text-gray-500">Belum ada data anak.</div>
@@ -37,20 +45,4 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script>
-        @foreach ($anakList ?? [] as $i => $anak)
-        (function () {
-            const el = document.getElementById('chartAnak{{ $i }}');
-            if (!el) return;
-            const nilais = {!! json_encode($anak->setoran->sortBy('tanggal_setoran')->pluck('nilai')->values()) !!};
-            const tgls = {!! json_encode($anak->setoran->sortBy('tanggal_setoran')->map(fn($s) => optional($s->tanggal_setoran)->format('Y-m-d'))->values()) !!};
-            new Chart(el, {
-                type: 'line',
-                data: { labels: tgls, datasets: [{ label: 'Nilai {{ addslashes($anak->nama) }}', data: nilais, tension: 0.3 }] },
-                options: { responsive: true }
-            });
-        })();
-        @endforeach
-    </script>
 </x-app-layout>

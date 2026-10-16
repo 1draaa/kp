@@ -16,18 +16,17 @@ th { background: #eee; }
 <h2>Rekap Hafalan Santri</h2>
 <p class="sub">Dicetak: {{ date('Y-m-d H:i') }}</p>
 <table>
-<thead><tr><th>No</th><th>Santri</th><th>Total Setoran</th><th>Rata-rata Nilai</th><th>Juz Unik</th></tr></thead>
+<thead><tr><th>No</th><th>Santri</th><th>Total Setoran</th><th>Juz Unik</th></tr></thead>
 <tbody>
 @forelse ($rekap ?? [] as $i => $r)
 <tr>
 <td>{{ $i + 1 }}</td>
 <td>{{ is_array($r) ? ($r['santri'] ?? '-') : ($r->santri->nama ?? $r->santri ?? '-') }}</td>
 <td>{{ is_array($r) ? ($r['total_setoran'] ?? 0) : ($r->total_setoran ?? 0) }}</td>
-<td>{{ is_array($r) ? ($r['rata_nilai'] ?? '-') : ($r->rata_nilai ?? '-') }}</td>
 <td>{{ is_array($r) ? ($r['juz_unik'] ?? 0) : ($r->juz_unik ?? 0) }}</td>
 </tr>
 @empty
-<tr><td colspan="5">Belum ada data.</td></tr>
+<tr><td colspan="4">Belum ada data.</td></tr>
 @endforelse
 </tbody>
 </table>

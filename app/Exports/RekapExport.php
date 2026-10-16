@@ -18,7 +18,7 @@ class RekapExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return ['Santri', 'NIS', 'Total Setoran', 'Rata-rata Nilai', 'Juz Unik'];
+        return ['Santri', 'NIS', 'Total Setoran', 'Juz Unik'];
     }
 
     public function collection(): Collection
@@ -48,7 +48,6 @@ class RekapExport implements FromCollection, WithHeadings
                 $santri?->nama ?? '-',
                 $santri?->nis ?? '-',
                 $items->count(),
-                round((float) $items->avg('nilai'), 1),
                 $items->whereNotNull('juz_mulai')->unique('juz_mulai')->count(),
             ];
         })->values();

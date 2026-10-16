@@ -22,7 +22,8 @@ class UstadController extends Controller
         if ($q = $request->query('q')) {
             $query->where(function ($w) use ($q) {
                 $w->where('nama', 'like', "%{$q}%")
-                    ->orWhere('nomor_hp', 'like', "%{$q}%");
+                    ->orWhere('nomor_hp', 'like', "%{$q}%")
+                    ->orWhere('niu', 'like', "%{$q}%");
             });
         }
 
@@ -45,23 +46,29 @@ class UstadController extends Controller
         $validated = $request->validate([
             'user_id' => ['nullable', 'exists:users,id'],
             'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+            'niu' => ['nullable', 'string', 'max:30', 'unique:ustad,niu'],
             'nama' => ['required', 'string', 'max:255'],
             'nomor_hp' => ['nullable', 'string', 'max:20'],
             'alamat' => ['nullable', 'string'],
             'status' => ['nullable', 'in:aktif,nonaktif'],
         ]);
 
+        if (empty($validated['niu'])) {
+            $validated['niu'] = 'NIU' . str_pad((string) ((int) (Ustad::max('id') ?? 0) + 1), 4, '0', STR_PAD_LEFT);
+        }
+
         if (empty($validated['user_id'])) {
             $user = new User();
             $user->name = $validated['nama'];
             $user->email = $validated['email'] ?? str()->slug($validated['nama']) . '-' . time() . '@pesantren.local';
-            $user->password = 'password';
+            $user->password = $validated['password'];
             $user->role = 'ustad';
             $user->save();
             $validated['user_id'] = $user->id;
         }
 
-        unset($validated['email']);
+        unset($validated['email'], $validated['password']);
 
         $ustad = Ustad::create($validated);
 
@@ -90,6 +97,8 @@ class UstadController extends Controller
         $validated = $request->validate([
             'user_id' => ['nullable', 'exists:users,id'],
             'email' => ['nullable', 'email', 'max:255', 'unique:users,email,'.$ustad->user_id],
+            'password' => ['nullable', 'string', 'min:8', 'max:255'],
+            'niu' => ['required', 'string', 'max:30', 'unique:ustad,niu,'.$ustad->id],
             'nama' => ['required', 'string', 'max:255'],
             'nomor_hp' => ['nullable', 'string', 'max:20'],
             'alamat' => ['nullable', 'string'],
@@ -97,12 +106,13 @@ class UstadController extends Controller
         ]);
 
         if ($ustad->user) {
-            $ustad->user->update([
+            $ustad->user->update(array_filter([
                 'name' => $validated['nama'],
                 'email' => $validated['email'] ?? $ustad->user->email,
-            ]);
+                'password' => $validated['password'] ?? null,
+            ]));
         }
-        unset($validated['email']);
+        unset($validated['email'], $validated['password']);
 
         $ustad->update($validated);
 

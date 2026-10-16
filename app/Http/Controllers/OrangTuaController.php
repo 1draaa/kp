@@ -65,7 +65,7 @@ class OrangTuaController extends Controller
 
         $orangTua = OrangTua::create($validated);
 
-        return redirect()->route($this->routePrefix().'orangtua.show', $orangTua)->with('success', 'Data orang tua berhasil ditambahkan.');
+        return redirect()->route($this->routePrefix().'orangtua.show', $orangTua)->with('success', 'Data wali santri berhasil ditambahkan.');
     }
 
     public function show(OrangTua $orangtua)
@@ -105,7 +105,7 @@ class OrangTuaController extends Controller
 
         $orangtua->update($validated);
 
-        return redirect()->route($this->routePrefix().'orangtua.show', $orangtua)->with('success', 'Data orang tua berhasil diperbarui.');
+        return redirect()->route($this->routePrefix().'orangtua.show', $orangtua)->with('success', 'Data wali santri berhasil diperbarui.');
     }
 
     public function destroy(OrangTua $orangtua)
@@ -117,6 +117,6 @@ class OrangTuaController extends Controller
             $user->delete();
         }
 
-        return redirect()->route($this->routePrefix().'orangtua.index')->with('success', 'Data orang tua berhasil dihapus.');
+        return redirect()->route($this->routePrefix().'orangtua.index')->with('success', 'Data wali santri berhasil dihapus.');
     }
 }

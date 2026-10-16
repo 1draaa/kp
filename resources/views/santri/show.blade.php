@@ -15,13 +15,12 @@
                     <p><span class="text-gray-500">Jenis Kelamin:</span> {{ $santri->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}</p>
                     <p><span class="text-gray-500">Tanggal Lahir:</span> {{ optional($santri->tanggal_lahir)->format('Y-m-d') ?? '-' }}</p>
                     <p><span class="text-gray-500">Alamat:</span> {{ $santri->alamat ?? '-' }}</p>
-                    <p><span class="text-gray-500">Orang Tua:</span> {{ $santri->orangTua->nama ?? '-' }}</p>
+                    <p><span class="text-gray-500">Wali Santri:</span> {{ $santri->orangTua->nama ?? '-' }}</p>
                     <p><span class="text-gray-500">Ustad:</span> {{ $santri->ustad->nama ?? '-' }}</p>
                     <p><span class="text-gray-500">Tanggal Masuk:</span> {{ optional($santri->tanggal_masuk)->format('Y-m-d') ?? '-' }}</p>
                     <p><span class="text-gray-500">Target Hafalan:</span> {{ $santri->target_hafalan ?? '-' }} Juz</p>
                     <p><span class="text-gray-500">Status:</span> {{ $santri->status ?? '-' }}</p>
                     <p><span class="text-gray-500">Total Setoran:</span> {{ $totalSetoran ?? 0 }}</p>
-                    <p><span class="text-gray-500">Rata-rata Nilai:</span> {{ $nilaiRata2 ?? '-' }}</p>
                 </div>
                 <div class="mt-4">
                     <div class="flex justify-between text-sm mb-1"><span>Progress Hafalan ({{ $juzUnik ?? 0 }}/{{ $santri->target_hafalan ?? 0 }} Juz)</span><span>{{ $progress ?? 0 }}%</span></div>
@@ -32,7 +31,7 @@
                 <h3 class="font-semibold mb-2">Riwayat Setoran</h3>
                 <table class="min-w-full text-sm">
                     <thead><tr class="border-b text-left text-gray-500">
-                        <th class="py-2 pr-2">Tanggal</th><th class="py-2 pr-2">Jenis</th><th class="py-2 pr-2">Materi</th><th class="py-2 pr-2">Nilai</th><th class="py-2">Status</th>
+                        <th class="py-2 pr-2">Tanggal</th><th class="py-2 pr-2">Jenis</th><th class="py-2 pr-2">Materi</th><th class="py-2">Status</th>
                     </tr></thead>
                     <tbody>
                         @forelse ($setoranTerbaru ?? [] as $s)
@@ -40,11 +39,10 @@
                                 <td class="py-2 pr-2">{{ optional($s->tanggal_setoran)->format('Y-m-d') }}</td>
                                 <td class="py-2 pr-2">{{ strtoupper($s->jenis_setoran) }}</td>
                                 <td class="py-2 pr-2">{{ $s->ringkasanMateri() }}</td>
-                                <td class="py-2 pr-2">{{ $s->nilai ?? '-' }}</td>
-                                <td class="py-2">{{ $s->status ?? '-' }}</td>
+                                <td class="py-2">{{ $s->status ? ucfirst($s->status) : '-' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="py-2 text-gray-500">Belum ada setoran.</td></tr>
+                            <tr><td colspan="4" class="py-2 text-gray-500">Belum ada setoran.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

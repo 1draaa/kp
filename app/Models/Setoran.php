@@ -16,8 +16,8 @@ class Setoran extends Model
         'santri_id', 'ustad_id', 'jenis_setoran', 'tanggal_setoran',
         'juz_mulai', 'juz_selesai', 'surat_mulai', 'surat_selesai',
         'ayat_mulai', 'ayat_selesai', 'jumlah_halaman',
-        'kelancaran', 'tajwid', 'makhraj', 'jumlah_kesalahan',
-        'nilai', 'status', 'catatan',
+        'jumlah_kesalahan',
+        'status', 'catatan',
     ];
 
     protected function casts(): array

@@ -105,6 +105,7 @@ class SetoranController extends Controller
 
     public function create()
     {
+        abort_if(auth()->user()->role === 'admin', 403, 'Admin hanya dapat melihat data setoran.');
         $santriList = $this->santriOptions();
         $ustadList = Ustad::where('status', 'aktif')->orderBy('nama')->get();
 
@@ -113,6 +114,7 @@ class SetoranController extends Controller
 
     public function store(Request $request)
     {
+        abort_if(auth()->user()->role === 'admin', 403, 'Admin hanya dapat melihat data setoran.');
         $jenis = $request->input('jenis_setoran');
 
         $rules = [
@@ -127,12 +129,8 @@ class SetoranController extends Controller
             'ayat_mulai' => ['nullable', 'integer', 'min:1'],
             'ayat_selesai' => ['nullable', 'integer', 'min:1'],
             'jumlah_halaman' => ['nullable', 'integer', 'min:1'],
-            'kelancaran' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'tajwid' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'makhraj' => ['nullable', 'integer', 'min:0', 'max:100'],
             'jumlah_kesalahan' => ['nullable', 'integer', 'min:0'],
-            'nilai' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'status' => ['nullable', 'string', 'max:20'],
+            'status' => ['required', 'in:lanjut,mengulang'],
             'catatan' => ['nullable', 'string'],
         ];
 
@@ -177,6 +175,7 @@ class SetoranController extends Controller
 
     public function edit(Setoran $setoran)
     {
+        abort_if(auth()->user()->role === 'admin', 403, 'Admin hanya dapat melihat data setoran.');
         $this->authorizeSetoran($setoran);
         $santriList = $this->santriOptions();
         $ustadList = Ustad::where('status', 'aktif')->orderBy('nama')->get();
@@ -186,6 +185,7 @@ class SetoranController extends Controller
 
     public function update(Request $request, Setoran $setoran)
     {
+        abort_if(auth()->user()->role === 'admin', 403, 'Admin hanya dapat melihat data setoran.');
         $this->authorizeSetoran($setoran);
 
         $jenis = $request->input('jenis_setoran', $setoran->jenis_setoran);
@@ -202,12 +202,8 @@ class SetoranController extends Controller
             'ayat_mulai' => ['nullable', 'integer', 'min:1'],
             'ayat_selesai' => ['nullable', 'integer', 'min:1'],
             'jumlah_halaman' => ['nullable', 'integer', 'min:1'],
-            'kelancaran' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'tajwid' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'makhraj' => ['nullable', 'integer', 'min:0', 'max:100'],
             'jumlah_kesalahan' => ['nullable', 'integer', 'min:0'],
-            'nilai' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'status' => ['nullable', 'string', 'max:20'],
+            'status' => ['required', 'in:lanjut,mengulang'],
             'catatan' => ['nullable', 'string'],
         ];
 
@@ -237,6 +233,7 @@ class SetoranController extends Controller
 
     public function destroy(Setoran $setoran)
     {
+        abort_if(auth()->user()->role === 'admin', 403, 'Admin hanya dapat melihat data setoran.');
         $this->authorizeSetoran($setoran);
         $setoran->delete();
 

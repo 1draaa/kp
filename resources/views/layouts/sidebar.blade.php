@@ -6,14 +6,13 @@
             ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'url' => route('admin.dashboard')],
             ['label' => 'Data Ustad', 'route' => 'admin.ustad.*', 'url' => route('admin.ustad.index')],
             ['label' => 'Data Santri', 'route' => 'admin.santri.*', 'url' => route('admin.santri.index')],
-            ['label' => 'Data Orang Tua', 'route' => 'admin.orangtua.*', 'url' => route('admin.orangtua.index')],
+            ['label' => 'Data Wali Santri', 'route' => 'admin.orangtua.*', 'url' => route('admin.orangtua.index')],
             ['label' => 'Data Setoran', 'route' => 'admin.setoran.*', 'url' => route('admin.setoran.index')],
             ['label' => 'Rekap Hafalan', 'route' => 'admin.rekap.*', 'url' => route('admin.rekap.index')],
         ],
         'ustad' => [
             ['label' => 'Dashboard', 'route' => 'ustad.dashboard', 'url' => route('ustad.dashboard')],
             ['label' => 'Santri Saya', 'route' => 'ustad.santri.*', 'url' => route('ustad.santri.index')],
-            ['label' => 'Input Santri Baru', 'route' => 'ustad.santri.create', 'url' => route('ustad.santri.create')],
             ['label' => 'Input Setoran', 'route' => 'ustad.setoran.create', 'url' => route('ustad.setoran.create')],
             ['label' => 'Riwayat Setoran', 'route' => 'ustad.setoran.*', 'url' => route('ustad.setoran.index')],
             ['label' => 'Rekap Hafalan', 'route' => 'ustad.rekap.*', 'url' => route('ustad.rekap.index')],
@@ -22,11 +21,10 @@
             ['label' => 'Dashboard', 'route' => 'orangtua.dashboard', 'url' => route('orangtua.dashboard')],
             ['label' => 'Data Anak', 'route' => 'orangtua.santri.*', 'url' => route('orangtua.santri.index')],
             ['label' => 'Riwayat Hafalan', 'route' => 'orangtua.setoran.*', 'url' => route('orangtua.setoran.index')],
-            ['label' => 'Rekap Hafalan', 'route' => 'orangtua.rekap.*', 'url' => route('orangtua.rekap.index')],
         ],
     ];
     $items = $menus[$role] ?? $menus['admin'];
-    $roleLabel = $role === 'ustad' ? 'Ustad' : ucfirst(str_replace('_', ' ', $role));
+    $roleLabel = $role === 'ustad' ? 'Ustad' : ($role === 'orang_tua' ? 'Wali Santri' : ucfirst(str_replace('_', ' ', $role)));
 @endphp
 
 <aside class="w-64 shrink-0 bg-white border-r border-gray-200 min-h-screen hidden md:block">

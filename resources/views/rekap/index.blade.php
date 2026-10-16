@@ -5,7 +5,6 @@
     $totalJuz = ($rekap ?? collect())->sum('juz_unik');
     $totalSetoran = ($setoran ?? collect())->total() ?? ($setoran ?? collect())->count();
     $totalHalaman = ($setoran ?? collect())->sum('jumlah_halaman');
-    $rata2 = round((float) ($setoran ?? collect())->avg('nilai'), 1);
 @endphp
 <x-app-layout>
     <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Rekap Hafalan</h2></x-slot>
@@ -31,17 +30,16 @@
                 </div>
             </form>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div class="bg-white p-4 rounded-lg shadow"><p class="text-sm text-gray-500">Total Setoran</p><p class="text-2xl font-bold">{{ $totalSetoran }}</p></div>
                 <div class="bg-white p-4 rounded-lg shadow"><p class="text-sm text-gray-500">Total Halaman</p><p class="text-2xl font-bold">{{ $totalHalaman }}</p></div>
                 <div class="bg-white p-4 rounded-lg shadow"><p class="text-sm text-gray-500">Total Juz (unik)</p><p class="text-2xl font-bold">{{ $totalJuz }}</p></div>
-                <div class="bg-white p-4 rounded-lg shadow"><p class="text-sm text-gray-500">Rata-rata Nilai</p><p class="text-2xl font-bold">{{ $rata2 }}</p></div>
             </div>
 
             <div class="bg-white rounded-lg shadow overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead><tr class="border-b text-left text-gray-500">
-                        <th class="py-2 px-3">Tanggal</th><th class="py-2 px-3">Santri</th><th class="py-2 px-3">Jenis</th><th class="py-2 px-3">Surat/Juz</th><th class="py-2 px-3">Hafalan</th><th class="py-2 px-3">Nilai</th><th class="py-2 px-3">Status</th><th class="py-2 px-3">Catatan</th>
+                        <th class="py-2 px-3">Tanggal</th><th class="py-2 px-3">Santri</th><th class="py-2 px-3">Jenis</th><th class="py-2 px-3">Surat/Juz</th><th class="py-2 px-3">Hafalan</th><th class="py-2 px-3">Status</th><th class="py-2 px-3">Catatan</th>
                     </tr></thead>
                     <tbody>
                         @forelse ($setoran ?? [] as $s)
@@ -51,8 +49,7 @@
                                 <td class="py-2 px-3">{{ strtoupper($s->jenis_setoran) }}</td>
                                 <td class="py-2 px-3">{{ $s->ringkasanMateri() }}</td>
                                 <td class="py-2 px-3">{{ $s->jumlah_halaman ?? '-' }} hlm</td>
-                                <td class="py-2 px-3">{{ $s->nilai ?? '-' }}</td>
-                                <td class="py-2 px-3">{{ $s->status ?? '-' }}</td>
+                                <td class="py-2 px-3">{{ $s->status ? ucfirst($s->status) : '-' }}</td>
                                 <td class="py-2 px-3">{{ \Illuminate\Support\Str::limit($s->catatan ?? '-', 40) }}</td>
                             </tr>
                         @empty

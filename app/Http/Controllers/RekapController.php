@@ -49,7 +49,6 @@ class RekapController extends Controller
                 return (object) [
                     'santri' => $first->santri,
                     'total_setoran' => $items->count(),
-                    'rata_nilai' => round((float) $items->avg('nilai'), 1),
                     'juz_unik' => $items->whereNotNull('juz_mulai')->unique('juz_mulai')->count(),
                 ];
             })->values();
@@ -68,7 +67,6 @@ class RekapController extends Controller
                 return [
                     'santri' => $first->santri?->nama ?? '-',
                     'total_setoran' => $items->count(),
-                    'rata_nilai' => round((float) $items->avg('nilai'), 1),
                     'juz_unik' => $items->whereNotNull('juz_mulai')->unique('juz_mulai')->count(),
                 ];
             })->values()->toArray();

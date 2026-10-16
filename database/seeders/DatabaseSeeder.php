@@ -27,15 +27,15 @@ class DatabaseSeeder extends Seeder
         }
         $ustadList = [];
         foreach ($ustadUsers as $i => $u) {
-            $ustadList[] = Ustad::create(['user_id' => $u->id, 'nama' => $u->name, 'nomor_hp' => '0812000000' . $i, 'alamat' => 'Pondok Pesantren', 'status' => 'aktif']);
+            $ustadList[] = Ustad::create(['user_id' => $u->id, 'niu' => 'NIU' . str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT), 'nama' => $u->name, 'nomor_hp' => '0812000000' . $i, 'alamat' => 'Pondok Pesantren', 'status' => 'aktif']);
         }
 
         $ortuList = [];
-        $ortuDemo = User::create(['name' => 'Orang Tua Demo', 'email' => 'orangtua@example.com', 'password' => 'password', 'role' => 'orang_tua']);
-        $ortuList[] = OrangTua::create(['user_id' => $ortuDemo->id, 'nama' => 'Orang Tua Demo', 'nomor_hp' => '081300000001', 'alamat' => 'Jl. Contoh 1']);
+        $ortuDemo = User::create(['name' => 'Wali Santri Demo', 'email' => 'orangtua@example.com', 'password' => 'password', 'role' => 'orang_tua']);
+        $ortuList[] = OrangTua::create(['user_id' => $ortuDemo->id, 'nama' => 'Wali Santri Demo', 'nomor_hp' => '081300000001', 'alamat' => 'Jl. Contoh 1']);
         for ($i = 1; $i <= 9; $i++) {
-            $u = User::create(['name' => "Orang Tua $i", 'email' => "orangtua$i@example.com", 'password' => 'password', 'role' => 'orang_tua']);
-            $ortuList[] = OrangTua::create(['user_id' => $u->id, 'nama' => "Orang Tua $i", 'nomor_hp' => '0813000000' . ($i + 10), 'alamat' => "Jl. Contoh $i"]);
+            $u = User::create(['name' => "Wali Santri $i", 'email' => "orangtua$i@example.com", 'password' => 'password', 'role' => 'orang_tua']);
+            $ortuList[] = OrangTua::create(['user_id' => $u->id, 'nama' => "Wali Santri $i", 'nomor_hp' => '0813000000' . ($i + 10), 'alamat' => "Jl. Contoh $i"]);
         }
 
         $surat = ['Al-Fatihah', 'Al-Baqarah', 'Ali Imran', 'An-Nisa', 'Al-Maidah', 'Al-Anam', 'Al-Araf', 'Yasin', 'Al-Kahfi', 'Ar-Rahman', 'Al-Waqiah', 'Al-Mulk'];
@@ -72,12 +72,8 @@ class DatabaseSeeder extends Seeder
                         'ayat_mulai' => $jn === 'manzil' ? null : 1,
                         'ayat_selesai' => $jn === 'manzil' ? null : rand(5, 20),
                         'jumlah_halaman' => in_array($jn, ['sabqy']) ? rand(1, 5) : null,
-                        'kelancaran' => rand(70, 100),
-                        'tajwid' => rand(70, 100),
-                        'makhraj' => rand(70, 100),
                         'jumlah_kesalahan' => $jn === 'qiroah' ? rand(0, 5) : null,
-                        'nilai' => rand(70, 100),
-                        'status' => $jn === 'qiroah' ? null : ['Lancar', 'Cukup', 'Mengulang'][rand(0, 2)],
+                        'status' => ['lanjut', 'mengulang'][rand(0, 1)],
                         'catatan' => "Setoran $jn santri {$santri->nama}",
                     ]);
                 }
